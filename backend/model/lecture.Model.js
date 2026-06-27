@@ -43,6 +43,11 @@ const lectureSchema = new mongoose.Schema(
         url: String,
       },
     ],
+    // AI-generated study notes — cached here so Gemini is only called once
+    aiSummary: {
+      type: String,
+      default: null,
+    },
   },
   { timestamps: true }
 );

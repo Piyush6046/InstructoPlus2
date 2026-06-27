@@ -6,7 +6,9 @@ import Login from './pages/Login'
 import Dashboard from './pages/Educator/Dashboard'
 import Courses from './pages/Educator/Courses'
 // export const serverUrl = "http://localhost:8000"
-export const serverUrl = "https://backend-instructoplus.onrender.com"
+// export const serverUrl = "https://backend-instructoplus.onrender.com"
+export const serverUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:8000"
+
 
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -32,8 +34,9 @@ import SearchWithAi from './pages/SearchWithAi.jsx'
 import getcourseData from './customHooks/getPublishedCourse.js'
 import EnrolledStudents from './pages/Educator/EnrolledStudents.jsx'
 import CreateAnnouncement from './pages/Educator/CreateAnnouncement.jsx'
-import AllNotificationsPage from './pages/AllNotificationsPage.jsx' // Import AllNotificationsPage
-import AnnouncementDetail from './pages/AnnouncementDetail.jsx' // Import AnnouncementDetail
+import AllNotificationsPage from './pages/AllNotificationsPage.jsx'
+import AnnouncementDetail from './pages/AnnouncementDetail.jsx'
+import Certificate from './pages/Certificate.jsx'
 
 
 // Animation context
@@ -105,6 +108,7 @@ function App() {
               <Route path="/notifications" element={<AllNotificationsPage />} />
               <Route path="/announcements/:id" element={<AnnouncementDetail />} />
               <Route path="/enrolledstudents/:courseId" element={userData && userData.user && userData.user.role==="educator" ? <EnrolledStudents /> : <Navigate to="/" />} />
+              <Route path="/certificate/:courseId" element={userData ? <Certificate /> : <Navigate to="/login" />} />
             </Routes>
           </AnimatePresence>
         </main>

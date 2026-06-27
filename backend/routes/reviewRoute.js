@@ -4,7 +4,6 @@ import { addReview, getAllReviews, getCourseReviews } from "../controller/review
 
 
 
-
 let reviewRouter = express.Router()
 
 reviewRouter.post("/givereview",isAuth,addReview)

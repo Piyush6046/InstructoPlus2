@@ -47,7 +47,8 @@ function Login() {
         {
           name: user.displayName,
           email: user.email,
-          photo: user.photoURL
+          photo: user.photoURL,
+          role: "student" // default role for Google login
         },
         { withCredentials: true }
       )

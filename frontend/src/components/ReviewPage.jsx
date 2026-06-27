@@ -77,7 +77,7 @@ const ReviewPage = () => {
               <motion.div key={review._id || index} variants={item}>
                 <ReviewCard
                   id={review._id}
-                  text={review.comment}
+                  text={review.review}
                   name={review.user?.name}
                   image={review.user?.photoUrl}
                   rating={review.rating}

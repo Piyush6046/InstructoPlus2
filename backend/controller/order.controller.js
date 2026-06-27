@@ -5,11 +5,16 @@ import User from '../model/user.Model.js'
 import Course from '../model/course.Model.js'
 import crypto from 'crypto'
 
-
-const RazorPayInstance = new razorpay({
-  key_id:process.env.RAZORPAY_KEY_ID,
-  key_secret:process.env.RAZORPAY_KEY_SECRET
-})
+// Lazily create Razorpay instance only when needed (avoids startup crash if env vars missing)
+const getRazorpayInstance = () => {
+  if (!process.env.RAZORPAY_KEY_ID || !process.env.RAZORPAY_KEY_SECRET) {
+    throw new Error('Razorpay keys not configured in .env file');
+  }
+  return new razorpay({
+    key_id: process.env.RAZORPAY_KEY_ID,
+    key_secret: process.env.RAZORPAY_KEY_SECRET,
+  });
+};
 
 export const verifyFreePayment = async (req, res) => {
   try {
@@ -86,7 +91,7 @@ export const RazorpayOrder = async (req, res) => {
       receipt: courseId.toString(),
     };
 
-    const order = await RazorPayInstance.orders.create(options);
+    const order = await getRazorpayInstance().orders.create(options);
 
     return res.status(200).json({
       success: true,

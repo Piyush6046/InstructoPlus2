@@ -1,13 +1,38 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { FaArrowLeftLong, FaBookOpen, FaClock, FaChartLine } from 'react-icons/fa6';
 import Nav from '../components/Nav';
+import axios from 'axios';
+import { serverUrl } from '../App';
 
 function EnrolledCourse() {
   const navigate = useNavigate();
   const { userData } = useSelector((state) => state.user);
-  // console.log(userData?.user?.enrolledCourses);
+  const [progressMap, setProgressMap] = useState({}); // { courseId: percentage }
+
+  // Fetch progress for every enrolled course
+  useEffect(() => {
+    const fetchAllProgress = async () => {
+      if (!userData?.user?.enrolledCourses?.length) return;
+      const results = await Promise.all(
+        userData.user.enrolledCourses.map(async (course) => {
+          try {
+            const res = await axios.get(`${serverUrl}/api/progress/${course._id}`, {
+              withCredentials: true,
+            });
+            return { id: course._id, pct: res.data.success ? res.data.percentage : 0 };
+          } catch {
+            return { id: course._id, pct: 0 };
+          }
+        })
+      );
+      const map = {};
+      results.forEach(({ id, pct }) => (map[id] = pct));
+      setProgressMap(map);
+    };
+    fetchAllProgress();
+  }, [userData]);
 
   if (!userData?.user?.enrolledCourses) {
     return (
@@ -150,7 +175,21 @@ function EnrolledCourse() {
                     </div>
 
                     <div className="mt-4 pt-4 border-t border-gray-100">
-                        <span>Lectures: {course.lectures.length}</span>
+                        <div className="flex justify-between text-xs text-gray-500 mb-1.5">
+                          <span>{course.lectures.length} lectures</span>
+                          <span className="font-semibold text-indigo-600">
+                            {progressMap[course._id] ?? 0}%
+                          </span>
+                        </div>
+                        <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+                          <div
+                            className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full transition-all duration-500"
+                            style={{ width: `${progressMap[course._id] ?? 0}%` }}
+                          />
+                        </div>
+                        {progressMap[course._id] === 100 && (
+                          <p className="text-green-600 text-xs mt-1 font-medium">✅ Completed!</p>
+                        )}
                     </div>
 
 

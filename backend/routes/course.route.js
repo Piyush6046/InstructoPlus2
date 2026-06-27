@@ -3,6 +3,7 @@ import { addDocuments, createCourse, createLectue, editCourse, editLecuture, get
 import isAuth from "../middleware/isAuth.js";
 import upload from "../middleware/multer.js";
 import { searchWithAi } from "../controller/search.controller.js";
+import { generateLectureSummary, askLecture, clearLectureSummary } from "../controller/ai.controller.js";
 
 const courseRouter = express.Router();
 
@@ -31,5 +32,10 @@ courseRouter.post("/search",isAuth,searchWithAi)
 
 // for enrolled students
 courseRouter.get("/enrolledstudents/:courseId", isAuth, getEnrolledStudents)
+
+// AI features — Lecture Summary + RAG Q&A
+courseRouter.get("/ai/summary/:lectureId", isAuth, generateLectureSummary)
+courseRouter.post("/ai/ask/:lectureId", isAuth, askLecture)
+courseRouter.delete("/ai/summary/:lectureId/clear", isAuth, clearLectureSummary)
 
 export default courseRouter;
