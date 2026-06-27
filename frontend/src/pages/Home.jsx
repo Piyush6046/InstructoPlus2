@@ -146,7 +146,7 @@ function Home() {
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              onClick={() => navigate("/search")}
+              onClick={() => navigate("/search-with-ai")}
               className="px-8 py-3 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-full text-lg font-medium hover:from-cyan-600 hover:to-blue-600 transition-all duration-300 flex items-center gap-2 shadow-lg"
             >
               Search with AI
