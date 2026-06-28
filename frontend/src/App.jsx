@@ -102,7 +102,7 @@ function App() {
               <Route path="/educator/create-announcement" element={userData && userData.user && userData.user.role==="educator" ? <CreateAnnouncement/> : <Navigate to="/" />}/>
               <Route path="/viewcourse/:courseId" element={<ViewCourse/>} />
               <Route path="/editlecture/:courseId/:lectureId" element={userData && userData.user && userData.user.role==="educator" ? <EditLecture/> : <Navigate to="/signup" />} />
-              <Route path="/viewlecture/:courseId" element={<ViewLecture />} />
+              <Route path="/viewlecture/:courseId" element={userData ? <ViewLecture /> : <Navigate to="/login" />} />
               <Route path="/enrolledcourses/" element={userData?<EnrolledCourse/> : <Navigate to="/login" />} />
               <Route path="/search-with-ai" element={userData ? <SearchWithAi /> : <Navigate to="/login" />} />
               <Route path="/notifications" element={<AllNotificationsPage />} />

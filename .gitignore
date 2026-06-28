@@ -1,0 +1,13 @@
+# Custom ignores
+claude_prompt.txt
+interview_guide.md
+docs/
+
+# General ignores
+node_modules/
+.env
+*.log
+dist/
+.vscode/
+.idea/
+.DS_Store

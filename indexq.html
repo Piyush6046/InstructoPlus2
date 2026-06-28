@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  @page { margin: 0; }
+  * { box-sizing: border-box; }
+  body {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    color: #1f2937;
+    font-size: 10.3pt;
+    line-height: 1.5;
+    margin: 0;
+  }
+  .page { page-break-after: always; padding: 0 4mm; }
+  .page:last-child { page-break-after: avoid; }
+
+  /* ---------- Cover ---------- */
+  .cover {
+    height: 277mm;
+    background: linear-gradient(135deg, #1e1b4b 0%, #3730a3 45%, #6d28d9 75%, #9d174d 100%);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 30mm 22mm;
+    page-break-after: always;
+  }
+  .cover .tag {
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    font-size: 10pt;
+    color: #c7d2fe;
+    font-weight: 600;
+    margin-bottom: 10mm;
+  }
+  .cover h1 {
+    font-size: 34pt;
+    margin: 0 0 6mm 0;
+    line-height: 1.15;
+    font-weight: 800;
+  }
+  .cover h2 {
+    font-size: 15pt;
+    font-weight: 400;
+    color: #e0e7ff;
+    margin: 0 0 18mm 0;
+  }
+  .cover .feat-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4mm;
+    margin-bottom: 18mm;
+  }
+  .cover .feat {
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 6px;
+    padding: 3mm 5mm;
+    font-size: 9pt;
+    font-weight: 600;
+  }
+  .cover .meta {
+    border-top: 1px solid rgba(255,255,255,0.3);
+    padding-top: 8mm;
+    font-size: 9.5pt;
+    color: #e0e7ff;
+  }
+  .cover .meta b { color: white; }
+
+  /* ---------- TOC ---------- */
+  .toc-title {
+    font-size: 22pt;
+    font-weight: 800;
+    color: #312e81;
+    margin: 10mm 0 8mm 0;
+    border-bottom: 3px solid #6d28d9;
+    padding-bottom: 4mm;
+  }
+  .toc-list { columns: 1; }
+  .toc-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 2.6mm 0;
+    border-bottom: 1px dotted #d1d5db;
+    font-size: 10.5pt;
+  }
+  .toc-item .num {
+    display: inline-block;
+    width: 8mm;
+    color: #6d28d9;
+    font-weight: 700;
+  }
+  .toc-item .count {
+    color: #9333ea;
+    font-size: 9pt;
+    font-weight: 600;
+  }
+  .toc-note {
+    margin-top: 8mm;
+    background: #f5f3ff;
+    border-left: 4px solid #7c3aed;
+    padding: 4mm 5mm;
+    font-size: 9.3pt;
+    color: #4c1d95;
+    border-radius: 0 4px 4px 0;
+  }
+
+  /* ---------- Section headers ---------- */
+  .section-title {
+    font-size: 19pt;
+    font-weight: 800;
+    color: white;
+    background: linear-gradient(90deg, #4338ca, #7e22ce);
+    padding: 6mm 7mm;
+    border-radius: 8px;
+    margin: 4mm 0 7mm 0;
+  }
+  .section-title .sub {
+    display: block;
+    font-size: 10pt;
+    font-weight: 400;
+    color: #e9d5ff;
+    margin-top: 1.5mm;
+  }
+  h3.subhead {
+    font-size: 13pt;
+    font-weight: 700;
+    color: #4338ca;
+    margin: 7mm 0 3mm 0;
+    padding-bottom: 1.5mm;
+    border-bottom: 2px solid #e0e7ff;
+  }
+  p { margin: 2mm 0; }
+
+  /* ---------- Feature cards ---------- */
+  .feature-card {
+    border: 1px solid #e5e7eb;
+    border-left: 4px solid #6366f1;
+    border-radius: 6px;
+    padding: 4mm 5mm;
+    margin: 3mm 0;
+    background: #fafafa;
+  }
+  .feature-card h4 {
+    margin: 0 0 1.5mm 0;
+    color: #312e81;
+    font-size: 11pt;
+  }
+  .feature-card p { margin: 1mm 0; font-size: 9.7pt; }
+
+  /* ---------- Tables ---------- */
+  table { width: 100%; border-collapse: collapse; margin: 3mm 0 5mm 0; font-size: 9pt; }
+  th { background: #4338ca; color: white; padding: 2.2mm 3mm; text-align: left; }
+  td { padding: 2mm 3mm; border-bottom: 1px solid #e5e7eb; vertical-align: top; }
+  tr:nth-child(even) td { background: #f8f7ff; }
+  code { background: #eef2ff; color: #4338ca; padding: 0.5mm 1.5mm; border-radius: 3px; font-family: 'Courier New', monospace; font-size: 9pt; }
+  pre {
+    background: #1e1b2e; color: #e0e7ff; padding: 3mm 4mm; border-radius: 5px;
+    font-family: 'Courier New', monospace; font-size: 8.3pt; overflow: hidden;
+    white-space: pre-wrap; margin: 2mm 0 4mm 0; line-height: 1.4;
+  }
+
+  /* ---------- Callouts ---------- */
+  .callout-warn {
+    background: #fffbeb; border-left: 4px solid #f59e0b; border-radius: 0 5px 5px 0;
+    padding: 3mm 5mm; margin: 3mm 0; font-size: 9.5pt;
+  }
+  .callout-warn .label { color: #b45309; font-weight: 800; font-size: 9pt; text-transform: uppercase; letter-spacing: 0.5px; }
+  .callout-info {
+    background: #eff6ff; border-left: 4px solid #3b82f6; border-radius: 0 5px 5px 0;
+    padding: 3mm 5mm; margin: 3mm 0; font-size: 9.5pt;
+  }
+  .callout-info .label { color: #1d4ed8; font-weight: 800; font-size: 9pt; text-transform: uppercase; letter-spacing: 0.5px; }
+  .callout-pitch {
+    background: #f0fdf4; border-left: 4px solid #16a34a; border-radius: 0 5px 5px 0;
+    padding: 4mm 5mm; margin: 3mm 0; font-size: 10pt; font-style: italic; color: #14532d;
+  }
+
+  /* ---------- Q&A ---------- */
+  .qa-section-label {
+    display: inline-block;
+    background: #312e81;
+    color: white;
+    font-size: 8.5pt;
+    font-weight: 700;
+    padding: 1mm 3mm;
+    border-radius: 4px;
+    margin: 6mm 0 3mm 0;
+  }
+  .qa {
+    border: 1px solid #e9e9f5;
+    border-radius: 6px;
+    margin: 2.6mm 0;
+    padding: 3mm 4mm 3.2mm 4mm;
+    background: #ffffff;
+  }
+  .qa .q {
+    font-weight: 700;
+    color: #1e1b4b;
+    font-size: 9.8pt;
+    margin-bottom: 1.3mm;
+  }
+  .qa .q .tag {
+    background: #6d28d9; color:white; font-size: 7.5pt; font-weight: 700;
+    padding: 0.3mm 1.6mm; border-radius: 3px; margin-right: 2mm;
+  }
+  .qa .a {
+    font-size: 9.4pt;
+    color: #374151;
+  }
+  .qa .a b { color: #1f2937; }
+
+  .rapid-table td:first-child { font-weight: 700; color: #4338ca; width: 42%; }
+
+  .footer-note { text-align: center; color: #9ca3af; font-size: 8pt; margin-top: 10mm; }
+</style>
+</head>
+<body>
+
+<!-- ============ COVER PAGE ============ -->
+<div class="cover">
+  <div class="tag">Placement &amp; Internship Interview Preparation</div>
+  <h1>InstructoPlus</h1>
+  <h2>Complete Project Walkthrough, Architecture Deep-Dive &amp; 150+ Interview Q&amp;A</h2>
+  <div class="feat-grid">
+    <div class="feat">MERN Stack</div>
+    <div class="feat">Gemini AI Tutor (RAG-lite)</div>
+    <div class="feat">Razorpay Payments</div>
+    <div class="feat">YouTube API Import</div>
+    <div class="feat">Course Progress Tracking</div>
+    <div class="feat">Announcements + Notifications</div>
+    <div class="feat">Certificates</div>
+    <div class="feat">JWT + Google OAuth</div>
+  </div>
+  <div class="meta">
+    Prepared for: <b>Piyush</b> &middot; B.Tech IT, VJTI Mumbai (2027)<br/>
+    Repo: <b>github.com/Piyush6046/InstructoPlus2</b><br/>
+    Use this guide for off-campus SDE applications, campus placements, and last-minute revision before any interview round.
+  </div>
+</div>
+
+<!-- ============ TABLE OF CONTENTS ============ -->
+<div class="page">
+  <div class="toc-title">Table of Contents</div>
+  <div class="toc-list">
+    <div class="toc-item"><span><span class="num">1.</span>Project Overview &amp; Elevator Pitches</span><span class="count">2 pitches</span></div>
+    <div class="toc-item"><span><span class="num">2.</span>Architecture &amp; Request Flow</span><span class="count">diagram</span></div>
+    <div class="toc-item"><span><span class="num">3.</span>Tech Stack Reference</span><span class="count">table</span></div>
+    <div class="toc-item"><span><span class="num">4.</span>Feature Deep-Dives (all 9 modules)</span><span class="count">9 features</span></div>
+    <div class="toc-item"><span><span class="num">5.</span>Database Schema Reference</span><span class="count">7 models</span></div>
+    <div class="toc-item"><span><span class="num">6.</span>Known Issues &amp; Honest Limitations</span><span class="count">5 findings</span></div>
+    <div class="toc-item"><span><span class="num">7.</span>Q&amp;A &mdash; Project Fundamentals &amp; Architecture</span><span class="count">12 Q&amp;A</span></div>
+    <div class="toc-item"><span><span class="num">8.</span>Q&amp;A &mdash; Authentication &amp; Security</span><span class="count">10 Q&amp;A</span></div>
+    <div class="toc-item"><span><span class="num">9.</span>Q&amp;A &mdash; Database &amp; Schema Design</span><span class="count">12 Q&amp;A</span></div>
+    <div class="toc-item"><span><span class="num">10.</span>Q&amp;A &mdash; AI / Gemini Integration (Deep)</span><span class="count">16 Q&amp;A</span></div>
+    <div class="toc-item"><span><span class="num">11.</span>Q&amp;A &mdash; YouTube Integration</span><span class="count">8 Q&amp;A</span></div>
+    <div class="toc-item"><span><span class="num">12.</span>Q&amp;A &mdash; Payments (Razorpay)</span><span class="count">10 Q&amp;A</span></div>
+    <div class="toc-item"><span><span class="num">13.</span>Q&amp;A &mdash; Progress Tracking &amp; Certificates</span><span class="count">8 Q&amp;A</span></div>
+    <div class="toc-item"><span><span class="num">14.</span>Q&amp;A &mdash; Announcements, Notifications, Reviews &amp; Search</span><span class="count">16 Q&amp;A</span></div>
+    <div class="toc-item"><span><span class="num">15.</span>Q&amp;A &mdash; Scalability &amp; System Design</span><span class="count">10 Q&amp;A</span></div>
+    <div class="toc-item"><span><span class="num">16.</span>Q&amp;A &mdash; Out-of-the-Box / Curveball Questions</span><span class="count">12 Q&amp;A</span></div>
+    <div class="toc-item"><span><span class="num">17.</span>Q&amp;A &mdash; Behavioral &amp; Project Narrative</span><span class="count">10 Q&amp;A</span></div>
+    <div class="toc-item"><span><span class="num">18.</span>Rapid-Fire Revision Table</span><span class="count">22 one-liners</span></div>
+  </div>
+  <div class="toc-note">
+    <b>How to use this guide:</b> Read Sections 1&ndash;6 once carefully to rebuild full context on the project &mdash; this is what most interviewers test first ("walk me through your project"). Then go category-by-category through the Q&amp;A bank. Section 16 (curveballs) and Section 6 (known issues) are what separate strong candidates from average ones &mdash; interviewers notice when you can speak honestly about trade-offs and limitations in your own code. Use Section 18 the morning of the interview for a 5-minute refresh.
+  </div>
+</div>
+
+<!-- ============ SECTION 1: OVERVIEW ============ -->
+<div class="page">
+  <div class="section-title">1. Project Overview &amp; Elevator Pitches<span class="sub">What this project is, in your own words, at two different lengths</span></div>
+
+  <p><b>InstructoPlus</b> is a full-stack MERN LMS (Learning Management System) &mdash; think a mini Udemy. There are two roles: <b>Educator</b> and <b>Student</b>. Educators create courses, add lectures (direct upload or YouTube import), and publish them. Students discover courses through AI-powered search, enroll (free or paid via Razorpay), watch lectures while tracking their progress, get AI-generated study notes and chat with an AI tutor per lecture, and download a certificate on completion. Educators can also broadcast announcements to their enrolled students via email and in-app notifications.</p>
+
+  <h3 class="subhead">30-Second Pitch (use this first, every time)</h3>
+  <div class="callout-pitch">
+    "InstructoPlus is a full MERN-stack LMS I built &mdash; think a mini Udemy. Educators create courses with video or YouTube-imported lectures, students discover them through AI-powered search, enroll via Razorpay, and track their progress lecture by lecture. The part I'm most proud of is an AI tutor layer using Google Gemini &mdash; it auto-generates structured study notes per lecture and lets students ask follow-up questions answered using that lecture's specific content, like a lightweight RAG pipeline. There's also course completion certificates and an announcement system for educators to broadcast to their students."
+  </div>
+
+  <h3 class="subhead">2-Minute Version (add this when asked to go deeper)</h3>
+  <div class="callout-pitch">
+    "On the backend it's Express and MongoDB with Mongoose, JWT auth in httpOnly cookies, and Cloudinary for media storage. Payments go through Razorpay &mdash; I verify every payment server-side by recomputing the HMAC signature rather than trusting the client's success callback. For the AI side, I cache Gemini's generated notes directly on the lecture document so it's only generated once, not on every page load &mdash; a deliberate cost and latency optimization. Progress tracking uses a separate collection with a compound unique index per student-per-course, and the completion percentage is always calculated server-side so the UI never drifts out of sync. I also built a YouTube import pipeline so educators don't have to re-upload video files &mdash; they paste a video or even a full playlist URL and the backend pulls metadata straight from the YouTube Data API."
+  </div>
+
+  <h3 class="subhead">If they ask "what makes this different from a tutorial-clone LMS"</h3>
+  <p>Three things: (1) the AI tutor layer is a real integration with a live LLM API and a caching strategy, not a static feature; (2) the YouTube import pipeline means content creation doesn't require re-hosting video files, which is a genuine cost/complexity saving; (3) the announcement/notification system models a real fan-out write pattern (one announcement &rarr; many notification documents) rather than a naive "read the announcement list every time" approach.</p>
+</div>
+
+<!-- ============ SECTION 2: ARCHITECTURE ============ -->
+<div class="page">
+  <div class="section-title">2. Architecture &amp; Request Flow<span class="sub">How a request actually moves through the system</span></div>
+
+  <h3 class="subhead">High-Level Architecture</h3>
+  <pre>React (Vite) SPA  ──axios + cookies──▶  Express API  ──Mongoose──▶  MongoDB
+      │                                      │
+      │                                      ├──▶ Cloudinary (video/image/doc storage)
+      │                                      ├──▶ Razorpay (order + payment verification)
+      │                                      ├──▶ Google Gemini API (AI notes, Ask-AI, AI search)
+      │                                      ├──▶ YouTube Data API v3 (video/playlist metadata)
+      │                                      └──▶ Nodemailer / Gmail SMTP (OTP + announcement emails)
+      │
+      └──▶ Firebase (Google OAuth identity only — token exchanged with backend)</pre>
+
+  <h3 class="subhead">Example Request Flow: Watching a Lecture &amp; Getting AI Notes</h3>
+  <table>
+    <tr><th>Step</th><th>What happens</th></tr>
+    <tr><td>1</td><td>Student opens <code>/viewlecture/:courseId</code> &rarr; <code>isAuth</code> middleware verifies the JWT cookie on every protected API call that follows.</td></tr>
+    <tr><td>2</td><td>Frontend calls <code>GET /api/progress/:courseId</code> to load completed-lecture state and render the progress bar.</td></tr>
+    <tr><td>3</td><td>Student clicks the "AI Notes" tab &rarr; <code>GET /api/course/ai/summary/:lectureId</code>.</td></tr>
+    <tr><td>4</td><td>Backend checks <code>lecture.aiSummary</code>. If cached, returns instantly. If not, builds a structured prompt and calls Gemini (<code>gemini-2.5-flash</code>).</td></tr>
+    <tr><td>5</td><td>Result is saved back onto the <code>Lecture</code> document (write-through cache) and returned.</td></tr>
+    <tr><td>6</td><td>Student marks the lecture complete &rarr; <code>POST /api/progress/:courseId/:lectureId/complete</code> toggles the lecture in <code>CourseProgress.completedLectures</code> and returns a freshly computed percentage.</td></tr>
+    <tr><td>7</td><td>At 100%, the frontend shows "Get Certificate" &rarr; navigates to <code>/certificate/:courseId</code>, which renders entirely from Redux state already in memory (no extra API call).</td></tr>
+  </table>
+
+  <div class="callout-info">
+    <span class="label">Interview tip</span><br/>
+    Being able to narrate a request end-to-end like the table above (auth middleware &rarr; controller &rarr; model &rarr; external API &rarr; cache &rarr; response) is one of the most common things interviewers probe for in "walk me through your project" follow-ups. Practice saying this out loud, not just reading it.
+  </div>
+</div>
+
+<!-- ============ SECTION 3: TECH STACK ============ -->
+<div class="page">
+  <div class="section-title">3. Tech Stack Reference<span class="sub">Exact libraries used — know what each one does and why it was picked</span></div>
+
+  <h3 class="subhead">Backend</h3>
+  <table>
+    <tr><th>Library</th><th>Role</th><th>Why this one</th></tr>
+    <tr><td>Express 5</td><td>HTTP server + routing</td><td>Minimal, unopinionated, full middleware control over auth/uploads.</td></tr>
+    <tr><td>Mongoose 8</td><td>MongoDB ODM</td><td>Schema validation, refs/population, hooks (e.g. average-rating recompute), indexes.</td></tr>
+    <tr><td>jsonwebtoken</td><td>Auth tokens</td><td>Stateless auth — no server-side session store needed.</td></tr>
+    <tr><td>bcryptjs</td><td>Password hashing</td><td>Salted hashing (cost factor 10) so plaintext passwords are never stored.</td></tr>
+    <tr><td>cookie-parser</td><td>Reads the JWT httpOnly cookie</td><td>Needed because the token isn't sent via Authorization header.</td></tr>
+    <tr><td>multer</td><td>Multipart file uploads</td><td>Handles incoming video/image/doc files before forwarding to Cloudinary.</td></tr>
+    <tr><td>cloudinary</td><td>Media storage/CDN</td><td>Offloads video/image/doc hosting — app servers never store media long-term.</td></tr>
+    <tr><td>razorpay</td><td>Payment gateway SDK</td><td>India-first payment gateway with UPI/cards/netbanking support.</td></tr>
+    <tr><td>nodemailer</td><td>Transactional email</td><td>Sends OTP reset emails and announcement emails via Gmail SMTP.</td></tr>
+    <tr><td>@google/genai</td><td>Gemini SDK</td><td>Powers AI lecture notes, Ask-AI chat, and AI-assisted course search.</td></tr>
+    <tr><td>axios</td><td>HTTP client (server-side)</td><td>Calls the YouTube Data API from <code>youtubeApi.js</code>.</td></tr>
+    <tr><td>validator</td><td>Input validation</td><td>Email format validation on signup.</td></tr>
+    <tr><td>dotenv</td><td>Env config</td><td>Keeps secrets (DB URL, API keys) out of source code.</td></tr>
+  </table>
+
+  <h3 class="subhead">Frontend</h3>
+  <table>
+    <tr><th>Library</th><th>Role</th><th>Why this one</th></tr>
+    <tr><td>React 19</td><td>UI library</td><td>Component model + hooks for all pages and the AI chat widget.</td></tr>
+    <tr><td>Redux Toolkit</td><td>Global state</td><td>Holds <code>user</code>, <code>course</code>, <code>lecture</code>, <code>review</code> slices shared across pages.</td></tr>
+    <tr><td>React Router v7</td><td>Client-side routing</td><td>Role-guarded routes (e.g. educator-only pages redirect via <code>Navigate</code>).</td></tr>
+    <tr><td>Axios</td><td>HTTP client</td><td><code>withCredentials: true</code> on every call so the JWT cookie is sent.</td></tr>
+    <tr><td>Tailwind CSS v4</td><td>Styling</td><td>Utility-first styling, used everywhere from buttons to the certificate layout.</td></tr>
+    <tr><td>Firebase</td><td>Google OAuth only</td><td>Used purely to get a verified Google identity; backend issues its own JWT after.</td></tr>
+    <tr><td>Framer Motion</td><td>Animation</td><td>Page/element transitions (<code>fadeIn</code>, <code>slideIn</code> variants).</td></tr>
+    <tr><td>react-toastify</td><td>Toast notifications</td><td>Success/error feedback on form submissions.</td></tr>
+    <tr><td>react-icons</td><td>Icon set</td><td>FontAwesome/Material icons used throughout (e.g. <code>FaRobot</code>, <code>FaTrophy</code>).</td></tr>
+  </table>
+
+  <h3 class="subhead">External Services &amp; Environment Variables</h3>
+  <table>
+    <tr><th>Service</th><th>Env vars used</th></tr>
+    <tr><td>MongoDB</td><td><code>MONGODB_URL</code></td></tr>
+    <tr><td>JWT</td><td><code>JWT_SECRET</code></td></tr>
+    <tr><td>Cloudinary</td><td><code>CLOUDINARY_CLOUD_NAME</code>, <code>CLOUDINARY_API_KEY</code>, <code>CLOUDINARY_API_SECRET</code></td></tr>
+    <tr><td>Razorpay</td><td><code>RAZORPAY_KEY_ID</code>, <code>RAZORPAY_KEY_SECRET</code></td></tr>
+    <tr><td>Gemini</td><td><code>GEMINI_API_KEY</code></td></tr>
+    <tr><td>YouTube Data API</td><td><code>YOUTUBE_API_KEY</code></td></tr>
+    <tr><td>Email (Gmail SMTP)</td><td><code>USER_EMAIL</code>, <code>USER_PASSWORD</code></td></tr>
+    <tr><td>Server/CORS</td><td><code>PORT</code>, <code>CLIENT_URL</code>, <code>NODE_ENV</code></td></tr>
+  </table>
+</div>
+
+<!-- ============ SECTION 4: FEATURE DEEP DIVES ============ -->
+<div class="page">
+  <div class="section-title">4. Feature Deep-Dives<span class="sub">All 9 modules, explained at implementation level</span></div>
+
+  <div class="feature-card">
+    <h4>4.1 Authentication (Signup / Login / OTP Reset / Google OAuth)</h4>
+    <p>Signup hashes the password with bcrypt (cost 10) and issues a JWT (7-day expiry) as an <b>httpOnly cookie</b> (<code>secure</code> + <code>sameSite:'None'</code> in production, <code>Lax</code> in dev — this split exists because cross-site cookies require <code>Secure</code>+<code>None</code>, but that combination needs HTTPS, which isn't available on localhost).</p>
+    <p>Forgot-password flow: a 4-digit OTP (<code>1000–9999</code>) is generated, stored on the user doc with a 5-minute expiry, emailed via Nodemailer. <code>verifyOTP</code> checks expiry and match, flips <code>isOtpVerified</code>, and only then does <code>resetPassword</code> allow a new password to be set.</p>
+    <p>Google OAuth: Firebase handles the Google sign-in popup client-side and returns the verified profile; the backend's <code>googleAuth</code> controller creates a user if one doesn't exist (with a non-usable placeholder password) and issues the same JWT cookie — so post-login, Google and email/password users are indistinguishable to the rest of the app.</p>
+  </div>
+
+  <div class="feature-card">
+    <h4>4.2 Course &amp; Lecture Management</h4>
+    <p>A course has <code>title, subTitle, description, category, level, price, thumbnail, isPublished</code> and arrays of refs to <code>enrolledStudents</code>, <code>lectures</code>, <code>reviews</code>. Lectures support three video sources: direct file upload (Cloudinary), single YouTube video, or full YouTube playlist (one lecture auto-created per video). Documents (PDFs/notes) can be attached per lecture, also via Cloudinary.</p>
+    <p>Educators can edit/remove courses and lectures, add documents post-creation, and view enrolled students (<code>getEnrolledStudents</code>, populated with name/email/photo only — password excluded).</p>
+  </div>
+
+  <div class="feature-card">
+    <h4>4.3 AI Lecture Notes &amp; Ask-AI (RAG-lite) — the headline feature</h4>
+    <p>Generate: <code>GET /api/course/ai/summary/:lectureId</code> checks <code>lecture.aiSummary</code> first (cache hit = instant). On a miss, it builds a structured prompt (emoji-sectioned: Overview, Core Concepts, Key Terms, How to Apply, Common Mistakes, Key Takeaways, Test Yourself) and calls Gemini (<code>temperature 0.5</code>, <code>maxOutputTokens 1200</code>), then <b>writes the result back onto the lecture document</b> so it's never regenerated.</p>
+    <p>Ask: <code>POST /api/course/ai/ask/:lectureId</code> retrieves the cached summary (or title+description as fallback context if no summary exists yet), wraps it with the student's question in a tutor-persona prompt (<code>temperature 0.4</code>, <code>maxOutputTokens 700</code>), and returns Gemini's answer. This is single-document context injection, not vector-based retrieval — be precise about that distinction if asked.</p>
+    <p>A <code>DELETE /api/course/ai/summary/:lectureId/clear</code> endpoint exists to force a fresh regenerate (useful if an educator edits lecture content after notes were already cached).</p>
+  </div>
+
+  <div class="feature-card">
+    <h4>4.4 YouTube Lecture Import</h4>
+    <p><code>utils/youtubeApi.js</code> extracts a video ID or playlist ID from a pasted URL via regex, then calls the YouTube Data API v3 (<code>videos</code> and <code>playlistItems</code> endpoints) to fetch title, description, thumbnail, and duration (ISO 8601, e.g. <code>PT14M32S</code>). For playlists, it paginates through <code>playlistItems</code> using <code>nextPageToken</code>, then makes one additional call <i>per video</i> to fetch each one's duration.</p>
+  </div>
+
+  <div class="feature-card">
+    <h4>4.5 Payments (Razorpay)</h4>
+    <p><code>RazorpayOrder</code> creates an order (amount converted to paise: <code>price * 100</code>). After the user completes payment client-side, <code>verifyPayment</code> recomputes <code>HMAC-SHA256(order_id + "|" + payment_id, RAZORPAY_KEY_SECRET)</code> server-side and compares it to the signature Razorpay returned — only an exact match results in enrollment. <code>verifyFreePayment</code> is a separate endpoint that skips Razorpay entirely for ₹0 courses. Both enrollment paths check <code>enrolledCourses.includes(courseId)</code> first, making them idempotent against retried requests.</p>
+  </div>
+
+  <div class="feature-card">
+    <h4>4.6 Course Progress Tracking</h4>
+    <p><code>CourseProgress</code> is a separate collection — one document per <code>(userId, courseId)</code> pair, enforced by a <b>compound unique index</b>. <code>completedLectures</code> is an array of lecture ObjectIds. <code>markLectureComplete</code> is a <b>toggle</b> (same endpoint adds or removes). Percentage is always recalculated server-side (<code>round(completed/total*100)</code>) and returned fresh on every call — the frontend never computes or caches this itself.</p>
+  </div>
+
+  <div class="feature-card">
+    <h4>4.7 Certificate of Completion</h4>
+    <p>Purely client-side. Once progress hits 100%, a "Get Certificate" button routes to <code>/certificate/:courseId</code>, which renders a styled certificate from data already in Redux and lets the user "download" via <code>window.print()</code> (Save as PDF). The Certificate ID (<code>IPLS-&lt;last6ofCourseId&gt;-&lt;last6ofUserId&gt;</code>) is computed in the browser — there is no backend record, no PDF library, and no server-side verification.</p>
+  </div>
+
+  <div class="feature-card">
+    <h4>4.8 Announcements &amp; Notifications</h4>
+    <p>An educator targets recipients by priority: explicit student list &gt; "all my courses" &gt; selected courses. They also choose delivery: in-app, email, or both. Email is sent <b>individually per recipient</b> (not BCC) via Nodemailer/Gmail SMTP, so students never see each other's addresses. In-app delivery does a bulk <code>insertMany</code> of one <code>Notification</code> document per recipient, each linking back to the <code>Announcement</code>. The navbar polls <code>GET /api/notifications/unread/count</code> every 60 seconds to update the badge — a simplicity-over-real-time trade-off (no WebSockets/SSE).</p>
+  </div>
+
+  <div class="feature-card">
+    <h4>4.9 Reviews &amp; AI-Assisted Search</h4>
+    <p>Reviews: 1–5 rating + comment, app-level check prevents a duplicate review per user per course (see Section 6 for a caveat on this). Search: Gemini maps free-text input to the closest fixed category/level keyword via a constrained prompt; if Gemini fails, it falls back to the raw input or a random keyword from a hardcoded list, so search degrades gracefully instead of breaking. The search itself first tries a direct regex match on the raw input across title/subtitle/category/level/description, only falling back to the AI-derived keyword if that returns zero results.</p>
+  </div>
+</div>
+
+<!-- ============ SECTION 5: DB SCHEMA ============ -->
+<div class="page">
+  <div class="section-title">5. Database Schema Reference<span class="sub">7 active models — know every field and every relationship</span></div>
+
+  <h3 class="subhead">User</h3>
+  <table>
+    <tr><th>Field</th><th>Type / Notes</th></tr>
+    <tr><td>name, email (unique), password</td><td>password is bcrypt-hashed; email has a unique index</td></tr>
+    <tr><td>role</td><td>enum: <code>student</code> | <code>educator</code>, default <code>student</code></td></tr>
+    <tr><td>photoUrl, description</td><td>profile fields, default null</td></tr>
+    <tr><td>enrolledCourses</td><td>array of refs &rarr; Course</td></tr>
+    <tr><td>resetOtp, otpExpiry, isOtpVerified</td><td>password-reset OTP flow state</td></tr>
+  </table>
+
+  <h3 class="subhead">Course</h3>
+  <table>
+    <tr><th>Field</th><th>Type / Notes</th></tr>
+    <tr><td>title, subTitle, description, category</td><td>category required</td></tr>
+    <tr><td>level</td><td>enum: Beginner | Intermediate | Advanced</td></tr>
+    <tr><td>thumbnail, price, isPublished</td><td>isPublished defaults true on creation in this version</td></tr>
+    <tr><td>enrolledStudents, lectures, reviews</td><td>arrays of refs &rarr; User, Lecture, Review respectively</td></tr>
+    <tr><td>creator</td><td>ref &rarr; User (the educator)</td></tr>
+  </table>
+
+  <h3 class="subhead">Lecture</h3>
+  <table>
+    <tr><th>Field</th><th>Type / Notes</th></tr>
+    <tr><td>lectureTitle, description, videoUrl</td><td>lectureTitle required</td></tr>
+    <tr><td>duration</td><td>String — ISO 8601 for YouTube (<code>PT0S</code> default), raw seconds for Cloudinary uploads</td></tr>
+    <tr><td>isYoutubeVideo, youtubeVideoId, youtubePlaylistId</td><td>YouTube-source tracking fields</td></tr>
+    <tr><td>isPreviewFree</td><td>lets non-enrolled users preview this lecture</td></tr>
+    <tr><td>courseId</td><td>ref &rarr; Course, required</td></tr>
+    <tr><td>documents</td><td>embedded array: <code>{title, description, url}</code></td></tr>
+    <tr><td>aiSummary</td><td>cached Gemini-generated notes, default null — the write-through cache</td></tr>
+  </table>
+
+  <h3 class="subhead">CourseProgress</h3>
+  <table>
+    <tr><th>Field</th><th>Type / Notes</th></tr>
+    <tr><td>userId, courseId</td><td>both required, refs &rarr; User, Course</td></tr>
+    <tr><td>completedLectures</td><td>array of refs &rarr; Lecture</td></tr>
+    <tr><td><i>Index</i></td><td><code>{userId:1, courseId:1}</code> — <b>unique</b> (one progress doc per student per course)</td></tr>
+  </table>
+
+  <h3 class="subhead">Review (active model: reviewModel.js)</h3>
+  <table>
+    <tr><th>Field</th><th>Type / Notes</th></tr>
+    <tr><td>course, user</td><td>refs, both required</td></tr>
+    <tr><td>rating</td><td>Number, 1–5</td></tr>
+    <tr><td>comment</td><td>String</td></tr>
+    <tr><td>reviewedAt</td><td>defaults to Date.now</td></tr>
+  </table>
+
+  <h3 class="subhead">Announcement</h3>
+  <table>
+    <tr><th>Field</th><th>Type / Notes</th></tr>
+    <tr><td>title, description, attachmentUrl</td><td>attachmentUrl via Cloudinary, default null</td></tr>
+    <tr><td>courseIds, recipientStudents</td><td>arrays of refs — target sets</td></tr>
+    <tr><td>sender</td><td>ref &rarr; User, required (the educator)</td></tr>
+    <tr><td>deliveryType</td><td>enum: inapp | email | both</td></tr>
+  </table>
+
+  <h3 class="subhead">Notification</h3>
+  <table>
+    <tr><th>Field</th><th>Type / Notes</th></tr>
+    <tr><td>userId</td><td>ref &rarr; User, required (the recipient)</td></tr>
+    <tr><td>announcementId</td><td>ref &rarr; Announcement, required</td></tr>
+    <tr><td>isRead</td><td>Boolean, default false</td></tr>
+  </table>
+
+  <div class="callout-info">
+    <span class="label">Relationship summary</span><br/>
+    User 1—N Course (creator) &middot; User N—N Course (enrolledStudents/enrolledCourses, refs on both sides) &middot; Course 1—N Lecture &middot; User+Course 1—1 CourseProgress (unique compound index) &middot; User+Course 1—1 Review (app-level uniqueness only) &middot; Announcement 1—N Notification (fan-out write).
+  </div>
+</div>
+
+<!-- ============ SECTION 6: KNOWN ISSUES ============ -->
+<div class="page">
+  <div class="section-title">6. Known Issues &amp; Honest Limitations<span class="sub">Real things found in the code — own these, don't hide them</span></div>
+
+  <p>These aren't disqualifying — every real codebase has trade-offs like this. Interviewers consistently respond better to a candidate who can name limitations in their own code unprompted than one who insists everything is perfect.</p>
+
+  <div class="callout-warn">
+    <span class="label">1. Duplicate Review model</span><br/>
+    Two files define a Mongoose model named <code>"Review"</code>: <code>review.Model.js</code> (richer — has <code>instructor</code>, <code>isAnonymous</code>, and a <code>post('save')</code> hook that auto-recomputes the course's average rating) and <code>reviewModel.js</code> (simpler — this is the one actually wired into <code>reviewController.js</code>). The richer one is dead code, only ever imported by <code>seed.js</code>. <b>Risk:</b> if both are ever imported in the same running process, Mongoose throws <code>OverwriteModelError: Cannot overwrite 'Review' model once compiled</code>.
+  </div>
+
+  <div class="callout-warn">
+    <span class="label">2. No DB-level duplicate-review guard</span><br/>
+    The unique compound index <code>{user, course}</code> lives only on the unused <i>review.Model.js</i>. The active model has no such index — "one review per user per course" is enforced only by an app-level <code>findOne</code> check in the controller, which has a race-condition window under concurrent requests.
+  </div>
+
+  <div class="callout-warn">
+    <span class="label">3. <code>axios</code> is an undeclared backend dependency</span><br/>
+    <code>utils/youtubeApi.js</code> does <code>import axios from 'axios'</code>, but <code>axios</code> is absent from <code>backend/package.json</code>'s dependencies — it only works today because it happens to be hoisted into <code>node_modules</code> as a transitive dependency of something else. A clean install elsewhere could break this. Fix: <code>npm install axios --save</code> in the backend.
+  </div>
+
+  <div class="callout-warn">
+    <span class="label">4. Single-video YouTube import mislabels the lecture title</span><br/>
+    In <code>CreateLecture.jsx</code>, one text input doubles as either the lecture title <i>or</i> a YouTube URL (detected via <code>.startsWith('http')</code>). When a single video URL is pasted, that same URL string is sent as <code>lectureTitle</code> too. Backend logic is <code>lectureTitle: lectureTitle || videoDetails.title</code> — since the URL string is truthy, it wins over the auto-fetched real YouTube title. Result: single-video imports get titled with the raw URL instead of the actual video name. (Playlist imports don't have this bug — they use <code>video.title</code> directly, ignoring the form field.)
+  </div>
+
+  <div class="callout-warn">
+    <span class="label">5. Certificates have no server-side existence or verification</span><br/>
+    The certificate is generated entirely in the browser from Redux state, with a Certificate ID computed client-side from existing IDs. There is no backend record of issuance and no public verification endpoint — a deliberate scope trade-off, but worth naming proactively as a "what I'd add next" item.
+  </div>
+
+  <div class="callout-info">
+    <span class="label">How to phrase this if asked "tell me about a bug or limitation in your project"</span><br/>
+    "I actually found a couple of these doing a fresh review of my own code recently — for example, I have two Review schemas registered under the same Mongoose model name, and only one of them is actually wired into the live controller. The unused one has a unique index I should have on the active one, since right now duplicate-review prevention is only an app-level check, not a database guarantee. It's a good example of why I now re-read my own models before extending a feature, not just the controller I'm touching."
+  </div>
+</div>
+
+<!-- ============ SECTION 7: Q&A FUNDAMENTALS ============ -->
+<div class="page">
+  <div class="section-title">7. Q&amp;A — Project Fundamentals &amp; Architecture<span class="sub">12 questions</span></div>
+
+  <div class="qa"><div class="q"><span class="tag">Q1</span>Why MERN and not Next.js or another framework?</div><div class="a"><b>A:</b> I wanted hands-on depth with Express middleware, raw REST design, and Mongoose schema design rather than have a framework abstract that away. MERN is also still the most commonly tested stack in SDE interviews, so it doubles as deliberate prep.</div></div>
+
+  <div class="qa"><div class="q"><span class="tag">Q2</span>Why MongoDB over a relational database here?</div><div class="a"><b>A:</b> Course &rarr; Lectures &rarr; Documents is a naturally nested, document-shaped hierarchy with flexible per-lecture fields (YouTube metadata differs from uploaded-video metadata). I still use references — not embedding — for Course&harr;User, Course&harr;Lecture, Course&harr;Review, because those need independent querying and can grow unbounded, which would bloat a single document if embedded. It's a hybrid: relational thinking via refs, document flexibility via schema-per-collection.</div></div>
+
+  <div class="qa"><div class="q"><span class="tag">Q3</span>Walk me through what happens end-to-end when a student watches a lecture and asks the AI a question.</div><div class="a"><b>A:</b> Auth middleware verifies the JWT cookie &rarr; frontend fetches the lecture's cached AI summary (or generates it if missing) &rarr; student types a question &rarr; <code>POST /api/course/ai/ask/:lectureId</code> retrieves that cached context, builds a tutor-persona prompt, calls Gemini, and returns the answer &rarr; frontend renders it in a chat-style UI with auto-scroll.</div></div>
+
+  <div class="qa"><div class="q"><span class="tag">Q4</span>What's the single most technically interesting part of this project to you?</div><div class="a"><b>A:</b> The write-through caching strategy on the AI notes — generating once with Gemini and persisting the result onto the Lecture document itself, so the same lecture never triggers a second LLM call. It's a small decision but it directly addresses cost and latency, which are the two things that actually matter in production LLM features.</div></div>
+
+  <div class="qa"><div class="q"><span class="tag">Q5</span>How is the frontend folder structured?</div><div class="a"><b>A:</b> <code>pages/</code> for route-level screens (with an <code>Educator/</code> subfolder for educator-only pages), <code>components/</code> for reusable pieces (Nav, Cards, VideoPlayer, NotificationList, ReviewCard), <code>redux/</code> for the four slices (user, course, lecture, review), and <code>customHooks/</code> for data-fetching hooks that hydrate Redux on mount (e.g. <code>getCurrentUser</code>, <code>getPublishedCourse</code>).</div></div>
+
+  <div class="qa"><div class="q"><span class="tag">Q6</span>How does the frontend know whether to show educator-only routes?</div><div class="a"><b>A:</b> <code>App.jsx</code> inline-checks <code>userData.user.role === "educator"</code> on each protected <code>&lt;Route&gt;</code> and renders <code>&lt;Navigate to="/" /&gt;</code> otherwise. It's route-level guarding done directly in the router, not a separate HOC/wrapper component.</div></div>
+
+  <div class="qa"><div class="q"><span class="tag">Q7</span>Is there a backend-level role check too, or only frontend?</div><div class="a"><b>A:</b> Mostly frontend route-guarding plus the implicit fact that only the <code>creator</code> can be matched in update/delete queries scoped by <code>req.userId</code>. I'd flag this honestly: a determined user could hit educator-only endpoints directly with a valid student JWT in some routes, since <code>isAuth</code> only confirms <i>who</i> you are, not <i>what role</i> you're allowed to act as. A stronger version would add an explicit <code>requireRole('educator')</code> middleware.</div></div>
+
+  <div class="qa"><div class="q"><span class="tag">Q8</span>How do you keep Redux state in sync with the database after a mutation (e.g. marking a lecture complete)?</div><div class="a"><b>A:</b> The API response itself returns the freshly recalculated state (e.g. updated <code>completedLectures</code> and <code>percentage</code>), and the component updates local/Redux state directly from that response — rather than re-fetching everything or trusting an optimistic client-side calculation that could drift from the server's truth.</div></div>
+
+  <div class="qa"><div class="q"><span class="tag">Q9</span>What does <code>isPublished</code> default to, and why?</div><div class="a"><b>A:</b> It defaults to <code>true</code> at creation in <code>createCourse</code> — meaning a course is publicly visible the moment it's created, before the educator has added any lectures. That's a real product decision worth being able to discuss: it's simpler for a small-scale/demo app, but a production version would default to <code>false</code> (draft) until the educator explicitly publishes.</div></div>
+
+  <div class="qa"><div class="q"><span class="tag">Q10</span>How does CORS work in this app?</div><div class="a"><b>A:</b> <code>cors({ origin: process.env.CLIENT_URL, credentials: true })</code> — restricts requests to one known frontend origin and allows cookies to be sent cross-origin, which is required because the JWT lives in an httpOnly cookie, not a header the frontend sets manually.</div></div>
+
+  <div class="qa"><div class="q"><span class="tag">Q11</span>What would break if you deployed the backend and frontend on completely different domains without any other changes?</div><div class="a"><b>A:</b> Nothing extra, actually — that's exactly what <code>sameSite: 'None'</code> + <code>secure: true</code> in production is for: it explicitly allows the cookie to be sent cross-site as long as the connection is HTTPS. It would break if deployed over plain HTTP, since <code>secure</code> cookies require HTTPS.</div></div>
+
+  <div class="qa"><div class="q"><span class="tag">Q12</span>If you had to demo just one feature in 60 seconds, which would you pick and why?</div><div class="a"><b>A:</b> The Ask-AI tab on a lecture — it's visually obvious, it's the most differentiated feature versus a generic LMS clone, and it naturally invites the deepest follow-up questions (caching, RAG, prompt design), which lets me show depth rather than breadth.</div></div>
+</div>
+
+<!-- ============ SECTION 8: Q&A AUTH & SECURITY ============ -->
+<div class="page">
+  <div class="section-title">8. Q&amp;A — Authentication &amp; Security<span class="sub">10 questions</span></div>
+
+  <div class="qa"><div class="q"><span class="tag">Q1</span>Why httpOnly cookies for the JWT instead of localStorage?</div><div class="a"><b>A:</b> localStorage is readable by any JavaScript running on the page, so it's vulnerable to token theft via XSS. httpOnly cookies can't be read by JS at all — the browser attaches them automatically on requests to my domain. The trade-off is needing CORS configured with <code>credentials: true</code> on both ends.</div></div>
+
+  <div class="qa"><div class="q"><span class="tag">Q2</span>Why is the JWT expiry 7 days? What's the trade-off?</div><div class="a"><b>A:</b> Convenience versus risk — a 7-day token means users stay logged in for a week without re-authenticating, but if a token is ever stolen, it's valid for that long too. There's no refresh-token rotation in this version, so it's a single long-lived token rather than a short-lived access token + refresh token pair — a known simplification I'd improve for a production app handling sensitive data.</div></div>
+
+  <div class="qa"><div class="q"><span class="tag">Q3</span>How is the password actually verified on login?</div><div class="a"><b>A:</b> <code>bcrypt.compare(plaintextPassword, storedHash)</code> — bcrypt re-derives the hash using the same salt stored inside the hash itself and compares, so the plaintext password is never stored or logged anywhere.</div></div>
+
+  <div class="qa"><div class="q"><span class="tag">Q4</span>Why bcrypt and not a faster hash like SHA-256?</div><div class="a"><b>A:</b> SHA-256 is designed to be fast, which is exactly wrong for password storage — it makes brute-forcing leaked hashes cheap. bcrypt is deliberately slow and includes a configurable cost factor (10, here) plus a built-in per-password salt, which resists both rainbow-table and brute-force attacks.</div></div>
+
+  <div class="qa"><div class="q"><span class="tag">Q5</span>Walk me through the OTP password-reset flow precisely.</div><div class="a"><b>A:</b> <code>sendOTP</code> generates a random 4-digit code, stores it plus a 5-minute expiry timestamp on the user document, and emails it. <code>verifyOTP</code> checks the code matches and hasn't expired, then sets <code>isOtpVerified = true</code> and clears the OTP fields. <code>resetPassword</code> checks <code>isOtpVerified</code> is true before allowing the password change, then re-hashes and resets that flag to false so the same verification can't be reused for a second reset.</div></div>
+
+  <div class="qa"><div class="q"><span class="tag">Q6</span>Is a 4-digit OTP secure enough?</div><div class="a"><b>A:</b> It's 10,000 possible combinations with no visible rate-limiting on the verify endpoint in this version — that's a real weakness against a brute-force script hitting <code>/verifyotp</code> repeatedly within the 5-minute window. A production fix: rate-limit attempts per email/IP, and/or lock out after N wrong tries.</div></div>
+
+  <div class="qa"><div class="q"><span class="tag">Q7</span>How does Google OAuth avoid creating duplicate accounts for someone who already signed up with email/password?</div><div class="a"><b>A:</b> <code>googleAuth</code> looks up the user by email first — if a user with that email already exists (regardless of how they originally signed up), it reuses that account and just issues a fresh JWT, rather than creating a second user.</div></div>
+
+  <div class="qa"><div class="q"><span class="tag">Q8</span>What does the <code>isAuth</code> middleware actually protect against, and what doesn't it protect against?</div><div class="a"><b>A:</b> It protects against unauthenticated access — no valid JWT cookie, no access. It does <i>not</i> protect against authorization issues — it tells you who the caller is (<code>req.userId</code>) but several routes don't separately verify that user's role or ownership before acting, which is a gap worth naming if asked.</div></div>
+
+  <div class="qa"><div class="q"><span class="tag">Q9</span>How would you add rate limiting to this API?</div><div class="a"><b>A:</b> A middleware like <code>express-rate-limit</code> applied globally or per-route (especially auth and OTP endpoints), keyed by IP and/or email, with stricter limits on <code>/sendotp</code> and <code>/verifyotp</code> than on general read endpoints.</div></div>
+
+  <div class="qa"><div class="q"><span class="tag">Q10</span>What's stored in the JWT payload, and why keep it minimal?</div><div class="a"><b>A:</b> Just <code>{ userId }</code>. Keeping the payload minimal means the token stays small and avoids embedding data (like role or email) that could go stale — every request re-fetches the current user from the DB inside controllers that need more than the ID, so the source of truth is always the database, not the token.</div></div>
+</div>
+
+<!-- ============ SECTION 9: Q&A DATABASE ============ -->
+<div class="page">
+  <div class="section-title">9. Q&amp;A — Database &amp; Schema Design<span class="sub">12 questions</span></div>
+
+  <div class="qa"><div class="q"><span class="tag">Q1</span>Why a separate <code>CourseProgress</code> collection instead of an array on User or Course?</div><div class="a"><b>A:</b> It's a many-to-many relationship (many students × many courses) with growing per-pair state. Putting it on User means one document growing unbounded as a student enrolls in more courses; putting it on Course means unbounded growth per enrolled student. A separate collection with a compound unique index <code>{userId, courseId}</code> keeps each document small and independently queryable, avoiding MongoDB's 16MB document-size ceiling becoming a real concern at scale.</div></div>
+
+  <div class="qa"><div class="q"><span class="tag">Q2</span>Why compound <i>unique</i> indexes specifically, instead of just checking before insert in the controller?</div><div class="a"><b>A:</b> App-level "check then insert" has a race-condition window — two near-simultaneous requests can both pass the check before either has inserted. A DB-level unique index makes the database itself reject the second insert atomically, regardless of timing. This is exactly the gap I found in my own Review model (Section 6) — the unique index exists on the unused schema, not the active one.</div></div>
+
+  <div class="qa"><div class="q"><span class="tag">Q3</span>How do <code>Announcement</code> and <code>Notification</code> relate, and why two collections instead of one?</div><div class="a"><b>A:</b> One Announcement &rarr; many Notifications (one per recipient), each storing just <code>userId, announcementId, isRead</code>. This is a fan-out write pattern — more expensive to write (N documents instead of 1) but far cheaper to read: "my unread notifications" is a simple indexed <code>find({userId, isRead:false})</code> instead of fetching every announcement and checking a <code>readBy</code> array's membership on every page load.</div></div>
+
+  <div class="qa"><div class="q"><span class="tag">Q4</span>What happens to Notifications if their Announcement is later deleted?</div><div class="a"><b>A:</b> Honestly, nothing automatic — there's no cascade-delete or cleanup hook on Announcement removal in this version, so a Notification could end up pointing at a deleted Announcement and <code>.populate()</code> would just return null for that field. I'd add a <code>pre('findOneAndDelete')</code> hook or a cleanup job for that.</div></div>
+
+  <div class="qa"><div class="q"><span class="tag">Q5</span>Why store <code>duration</code> as a String on Lecture instead of a Number?</div><div class="a"><b>A:</b> Because the two video sources produce duration in incompatible native formats — YouTube's API returns ISO 8601 strings like <code>PT14M32S</code>, while Cloudinary returns duration in raw seconds. Storing as a String avoids forcing an early, lossy normalization and lets the frontend's <code>parseDuration()</code> helper handle both formats at display time. The trade-off is you can't easily sort or sum durations at the database level without re-parsing first.</div></div>
+
+  <div class="qa"><div class="q"><span class="tag">Q6</span>Why are <code>documents</code> embedded directly on the Lecture schema instead of being a separate collection?</div><div class="a"><b>A:</b> Documents are small, lecture-scoped, and always fetched together with the lecture — there's no use case for querying documents independently of their lecture. Embedding avoids an unnecessary join/populate for data that's always read as a unit, which is the right call for genuinely 1-to-few, always-co-accessed data.</div></div>
+
+  <div class="qa"><div class="q"><span class="tag">Q7</span>What's the risk of using <code>.populate()</code> heavily, like in <code>getPublishedCourses</code> which populates creator, lectures, and reviews?</div><div class="a"><b>A:</b> Each populate is effectively a separate query Mongoose stitches together — so listing all published courses does 1 + 3N-ish queries depending on depth, rather than a single optimized join. At small scale it's invisible; at large catalog scale it becomes a real N+1-style cost. Mitigations: selective field projection (already partially done, e.g. <code>.populate("creator", "name photoUrl description email")</code>), pagination, or moving to aggregation pipelines with <code>$lookup</code> for hot read paths.</div></div>
+
+  <div class="qa"><div class="q"><span class="tag">Q8</span>Why does <code>User.password</code> get excluded with <code>.select("-password")</code> instead of using a schema-level <code>select: false</code>?</div><div class="a"><b>A:</b> It's explicit at every call site, which makes it obvious to anyone reading the controller that the password is intentionally excluded — but it does mean it's opt-in per query, so a new endpoint added later could forget to exclude it. A schema-level <code>select: false</code> on the field would make exclusion the default everywhere, requiring an explicit <code>.select('+password')</code> only where actually needed (e.g. login) — generally the safer pattern.</div></div>
+
+  <div class="qa"><div class="q"><span class="tag">Q9</span>How would you model a "wishlist" or "save for later" feature if asked to add one?</div><div class="a"><b>A:</b> Same pattern as CourseProgress — a separate <code>Wishlist</code> collection with a compound unique index on <code>{userId, courseId}</code>, rather than an array field on User, for the same unbounded-growth reasoning already established in this codebase.</div></div>
+
+  <div class="qa"><div class="q"><span class="tag">Q10</span>Why is <code>course.reviews</code> a manually-maintained array (pushed in the controller) rather than just querying Reviews by courseId on demand?</div><div class="a"><b>A:</b> It lets <code>getPublishedCourses</code> populate review counts/data in the same query as the course list, avoiding a second round-trip per course. The cost is consistency risk — the array and the actual Review collection could theoretically drift if a review is ever deleted without also splicing it out of <code>course.reviews</code> (there's no such delete path currently implemented, so this hasn't surfaced as a live bug, but it's a coupling worth flagging).</div></div>
+
+  <div class="qa"><div class="q"><span class="tag">Q11</span>What MongoDB feature would most improve this schema if you used it but currently don't?</div><div class="a"><b>A:</b> Schema-level <code>timestamps: true</code> is already used on most models (Course, CourseProgress, Review, Lecture) — but I'd add transactions (multi-document ACID transactions) around the payment-verification + enrollment write, since right now enrolling a user and adding them to the course's <code>enrolledStudents</code> are two separate, non-atomic writes — a crash between them could leave the data inconsistent.</div></div>
+
+  <div class="qa"><div class="q"><span class="tag">Q12</span>If MongoDB went down for 30 seconds during a payment verification, what's the worst case?</div><div class="a"><b>A:</b> The Razorpay signature check would still pass (that's pure crypto, no DB needed), but the subsequent <code>User.findById</code>/<code>save</code> calls would throw, the request would 500, and the user would have a successful Razorpay payment with no enrollment recorded — money taken, access not granted. That's exactly the kind of edge case a webhook-based reconciliation job (separate from the synchronous verify call) would catch and self-heal.</div></div>
+</div>
+
+</body>
+</html>

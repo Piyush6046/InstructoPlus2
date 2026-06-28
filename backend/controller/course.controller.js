@@ -366,30 +366,46 @@ export const createLectue = async (req, res) => {
   }
 };
 
-export const getCourseLectures=async(req,res)=>{
+export const getCourseLectures = async (req, res) => {
   try {
-    const {courseId}=req.params
-    const course=await Course.findById(courseId).populate("lectures");
-    if(!course){
-      return res.status(400).json({
-        success:false,
-        message:"Course not found"
-      })
+    const { courseId } = req.params;
+    const userId = req.userId;
+
+    const course = await Course.findById(courseId).populate("lectures");
+    if (!course) {
+      return res.status(404).json({
+        success: false,
+        message: "Course not found",
+      });
     }
+
+    // Check if user is enrolled or is the creator of the course
+    const isEnrolled = course.enrolledStudents.some(
+      (studentId) => studentId.toString() === userId.toString()
+    );
+    const isCreator = course.creator.toString() === userId.toString();
+
+    if (!isEnrolled && !isCreator) {
+      return res.status(403).json({
+        success: false,
+        message: "Access Denied: You are not enrolled in this course.",
+      });
+    }
+
     await course.save();
     return res.status(200).json({
-      success:true,
-      course
-    })
+      success: true,
+      course,
+    });
 
   } catch (error) {
     return res.status(500).json({
-      success:false,
-      message:"error while getting course lectures",
-      error
-    })
+      success: false,
+      message: "error while getting course lectures",
+      error: error.message || error,
+    });
   }
-}
+};
 
 export const editLecuture = async (req, res) => {
   try {
