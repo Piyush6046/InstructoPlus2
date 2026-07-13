@@ -3,6 +3,7 @@ import uploadOnCloudinary from "../config/cloudinary.js";
 import Lecture from "../model/lecture.Model.js";
 import User from "../model/user.Model.js";
 import { getYoutubeVideoId, getYoutubePlaylistId, fetchYoutubeVideoDetails, fetchYoutubePlaylistDetails } from '../utils/youtubeApi.js';
+import { invalidateCache } from "../middleware/cache.js";
 
 export const createCourse = async (req, res) => {
   try {
@@ -17,8 +18,9 @@ export const createCourse = async (req, res) => {
       title,
       creator: req.userId,
       category,
-      isPublished: true, // Set isPublished to true by default
+      isPublished: true,
     });
+    await invalidateCache("courses:published");
     return res.status(200).json({
       success: true,
       course,
@@ -171,6 +173,7 @@ export const editCourse = async (req, res) => {
     course = await Course.findByIdAndUpdate(courseId, updateData, {
       new: true,
     });
+    await invalidateCache("courses:published", `course:${courseId}`);
     return res.status(200).json({
       success: true,
       course,
@@ -219,6 +222,7 @@ export const removeCourse = async (req, res) => {
       });
     }
     course = await Course.findByIdAndDelete(courseId);
+    await invalidateCache("courses:published", `course:${courseId}`);
     return res.status(200).json({
       success: true,
       message: "Course deleted successfully",

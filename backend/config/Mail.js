@@ -113,8 +113,50 @@ const sendAnnouncementMail = async (to, subject, title, description, attachmentU
     }
 }
 
-// Backward compatibility - default export for password reset
+const sendSignupMail = async (to, otp) => {
+    try {
+        const mailOptions = {
+            from: process.env.USER_EMAIL,
+            to: to,
+            subject: "Verify Your Email - InstructoPlus",
+            html: `
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9fafb;">
+                    <div style="background-color: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                        <h2 style="color: #4f46e5; text-align: center; margin-bottom: 10px;">Welcome to InstructoPlus! 🎉</h2>
+                        <p style="color: #374151; font-size: 16px; line-height: 1.6; text-align: center;">
+                            You're one step away from joining thousands of learners.
+                        </p>
+                        <p style="color: #374151; font-size: 16px; line-height: 1.6;">
+                            Use the OTP below to verify your email and create your account:
+                        </p>
+                        <div style="text-align: center; margin: 30px 0;">
+                            <span style="background-color: #4f46e5; color: white; padding: 15px 30px; font-size: 24px; font-weight: bold; border-radius: 8px; letter-spacing: 3px;">${otp}</span>
+                        </div>
+                        <p style="color: #ef4444; font-size: 14px; text-align: center; margin: 20px 0;">
+                            This OTP expires in 5 minutes.
+                        </p>
+                        <p style="color: #6b7280; font-size: 14px; line-height: 1.6;">
+                            If you didn't request this, you can safely ignore this email.
+                        </p>
+                        <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 30px 0;">
+                        <p style="color: #9ca3af; font-size: 12px; text-align: center;">
+                            Best regards,<br>
+                            The InstructoPlus Team
+                        </p>
+                    </div>
+                </div>
+            `
+        };
+        const result = await transporter.sendMail(mailOptions);
+        console.log("Signup verification email sent successfully");
+        return result;
+    } catch (error) {
+        console.error("Signup email sending error:", error.message);
+        throw new Error("Failed to send signup verification email");
+    }
+}
+
 const sendMail = sendPasswordResetMail;
 
 export default sendMail;
-export { sendPasswordResetMail, sendAnnouncementMail };
+export { sendPasswordResetMail, sendSignupMail, sendAnnouncementMail };

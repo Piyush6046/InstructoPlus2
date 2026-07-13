@@ -3,10 +3,20 @@ import validator from "validator"
 import genToken from "../config/token.js"
 import cookieParser from 'cookie-parser'
 import bcrypt from "bcryptjs"
-import sendMail from '../config/Mail.js'
+import redisClient from "../config/redis.js"
+import { addEmailJob } from "../queues/emailQueue.js"
 export const signup = async (req, res) => {
   try {
     const { name, email, password, role } = req.body;
+
+    const isVerified = await redisClient.get(`otp_verified:${email}`);
+    if (!isVerified) {
+      return res.status(403).json({
+        success: false,
+        message: "Email not verified. Please verify OTP first.",
+      });
+    }
+
     let existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(400).json({
@@ -33,6 +43,7 @@ export const signup = async (req, res) => {
       password: hashPassword,
       role,
     });
+    await redisClient.del(`otp_verified:${email}`);
     let token = await genToken(user._id);
     res.cookie("token", token, {
       httpOnly: true,
@@ -51,7 +62,6 @@ export const signup = async (req, res) => {
       success: false,
       message: "Error while signing up",
     });
-    console.log(error);
   }
 };
 
@@ -124,11 +134,9 @@ export const sendOTP= async (req, res) => {
       })
     }
     const otp= Math.floor(1000+Math.random()*9000).toString();
-    user.resetOtp=otp
-    user.otpExpiry=Date.now()+5*60*1000
-    user.isOtpVerified=false
-    await user.save()
-    await sendMail(email,otp)
+    await redisClient.setex(`otp:${email}`, 5 * 60, otp);
+    await redisClient.del(`otp_verified:${email}`);
+    await addEmailJob(email, otp);
     return res.status(200).json({
       success:true,
       message:"OTP sent successfully"
@@ -142,32 +150,44 @@ export const sendOTP= async (req, res) => {
   }
 }
 
+export const sendSignupOTP = async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email) {
+      return res.status(400).json({ success: false, message: "Email is required" });
+    }
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ success: false, message: "Email already registered" });
+    }
+    const otp = Math.floor(1000 + Math.random() * 9000).toString();
+    await redisClient.setex(`otp:${email}`, 5 * 60, otp);
+    await redisClient.del(`otp_verified:${email}`);
+    await addEmailJob(email, otp, "signup");
+    return res.status(200).json({ success: true, message: "OTP sent successfully" });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: "Error sending OTP", error });
+  }
+};
+
 export const verifyOTP=async(req,res)=>{
   try {
     const {email,otp}=req.body
-    const user=await User.findOne({email})
-    if(!user){
+    const storedOtp = await redisClient.get(`otp:${email}`);
+    if(!storedOtp){
       return res.status(400).json({
         success:false,
-        message:"User not found"
+        message:"OTP expired or not found"
       })
     }
-    if(user.otpExpiry<Date.now()){
-      return res.status(400).json({
-        success:false,
-        message:"OTP expired"
-      })
-    }
-    if(user.resetOtp!==otp){
+    if(storedOtp !== otp){
       return res.status(400).json({
         success:false,
         message:"Invalid OTP"
       })
     }
-    user.resetOtp=undefined
-    user.otpExpiry=undefined
-    user.isOtpVerified=true
-    await user.save()
+    await redisClient.del(`otp:${email}`);
+    await redisClient.setex(`otp_verified:${email}`, 10 * 60, 'true');
     return res.status(200).json({
       success:true,
       message:"OTP verified successfully"
@@ -184,6 +204,13 @@ export const verifyOTP=async(req,res)=>{
 export const resetPassword =async(req,res)=>{
   try {
     const {email,password}=req.body
+    const isVerified = await redisClient.get(`otp_verified:${email}`);
+    if(!isVerified){
+      return res.status(400).json({
+        success:false,
+        message:"OTP not verified or session expired"
+      })
+    }
     const user=await User.findOne({email})
     if(!user){
       return res.status(400).json({
@@ -191,16 +218,10 @@ export const resetPassword =async(req,res)=>{
         message:"User not found"
       })
     }
-    if(!user.isOtpVerified){
-      return res.status(400).json({
-        success:false,
-        message:"OTP not verified"
-      })
-    }
     let hashPassword=await bcrypt.hash(password,10)
     user.password=hashPassword
-    user.isOtpVerified=false
     await user.save()
+    await redisClient.del(`otp_verified:${email}`);
     return res.status(200).json({
       success:true,
       message:"Password reset successfully"

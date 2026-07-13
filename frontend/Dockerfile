@@ -1,0 +1,29 @@
+FROM node:20-alpine AS builder
+
+WORKDIR /app
+
+COPY package*.json ./
+
+RUN npm install
+
+COPY . .
+
+ARG VITE_BACKEND_URL=http://localhost:8000
+ARG VITE_RAZORPAY_KEY_ID
+ARG VITE_FIREBASE_APIKEY
+
+ENV VITE_BACKEND_URL=$VITE_BACKEND_URL
+ENV VITE_RAZORPAY_KEY_ID=$VITE_RAZORPAY_KEY_ID
+ENV VITE_FIREBASE_APIKEY=$VITE_FIREBASE_APIKEY
+
+RUN npm run build
+
+FROM nginx:alpine
+
+COPY --from=builder /app/dist /usr/share/nginx/html
+
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]

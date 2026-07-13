@@ -4,16 +4,17 @@ import isAuth from "../middleware/isAuth.js";
 import upload from "../middleware/multer.js";
 import { searchWithAi } from "../controller/search.controller.js";
 import { generateLectureSummary, askLecture, clearLectureSummary } from "../controller/ai.controller.js";
+import { cacheMiddleware } from "../middleware/cache.js";
 
 const courseRouter = express.Router();
 
 courseRouter.post("/create",isAuth, createCourse);
-courseRouter.get("/getpublished",getPublishedCourses)
-courseRouter.get("/get-creator-course",isAuth, getCreatorCourses) // Changed route name
-courseRouter.get("/getcreator",isAuth, getCreatorCourses) // Add the route frontend expects
+courseRouter.get("/getpublished", cacheMiddleware("courses:published", 300), getPublishedCourses)
+courseRouter.get("/get-creator-course",isAuth, getCreatorCourses)
+courseRouter.get("/getcreator",isAuth, getCreatorCourses)
 courseRouter.post("/getcreatorbyid",isAuth, getCreator)
 courseRouter.post("/editcourse/:courseId",isAuth,upload.single("thumbnail"),editCourse)
-courseRouter.get("/getcourse/:courseId",isAuth,getCourseById)
+courseRouter.get("/getcourse/:courseId",isAuth, cacheMiddleware((req) => `course:${req.params.courseId}`, 600), getCourseById)
 courseRouter.delete("/remove/:courseId",isAuth,removeCourse)
 courseRouter.get("/getbycreator/:creatorId", getCoursesByCreatorId);
 
