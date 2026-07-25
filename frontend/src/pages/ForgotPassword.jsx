@@ -65,8 +65,9 @@ function ForgotPassword() {
     switch (step) {
       case 1:
         return (
-          <motion.div
+          <motion.form
             className="space-y-6"
+            onSubmit={(e) => { e.preventDefault(); handleStep1(); }}
             variants={fadeIn}
             initial="hidden"
             animate="visible"
@@ -100,26 +101,28 @@ function ForgotPassword() {
             </div>
 
             <button
+              type="submit"
               className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-3 rounded-xl font-medium hover:from-indigo-700 hover:to-purple-700 transition shadow-md"
               disabled={loading}
-              onClick={handleStep1}
             >
               {loading ? <ClipLoader size={20} color="white" /> : "Send OTP"}
             </button>
 
             <button
+              type="button"
               className="w-full flex items-center justify-center gap-2 text-gray-600 hover:text-gray-800 mt-4"
               onClick={() => navigate("/login")}
             >
               <FaArrowLeft size={14} /> Back to Login
             </button>
-          </motion.div>
+          </motion.form>
         );
 
       case 2:
         return (
-          <motion.div
+          <motion.form
             className="space-y-6"
+            onSubmit={(e) => { e.preventDefault(); handleStep2(); }}
             variants={fadeIn}
             initial="hidden"
             animate="visible"
@@ -153,19 +156,20 @@ function ForgotPassword() {
             </div>
 
             <button
+              type="submit"
               className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-3 rounded-xl font-medium hover:from-indigo-700 hover:to-purple-700 transition shadow-md"
               disabled={loading}
-              onClick={handleStep2}
             >
               {loading ? <ClipLoader size={20} color="white" /> : "Verify OTP"}
             </button>
-          </motion.div>
+          </motion.form>
         );
 
       case 3:
         return (
-          <motion.div
+          <motion.form
             className="space-y-6"
+            onSubmit={(e) => { e.preventDefault(); handleStep3(); }}
             variants={fadeIn}
             initial="hidden"
             animate="visible"
@@ -211,13 +215,13 @@ function ForgotPassword() {
             </div>
 
             <button
+              type="submit"
               className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-3 rounded-xl font-medium hover:from-indigo-700 hover:to-purple-700 transition shadow-md"
-              onClick={handleStep3}
               disabled={loading}
             >
               {loading ? <ClipLoader size={20} color="white" /> : "Reset Password"}
             </button>
-          </motion.div>
+          </motion.form>
         );
     }
   };

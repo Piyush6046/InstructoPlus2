@@ -74,7 +74,7 @@ function Login() {
             <h1 className="text-3xl font-bold text-gray-800 mb-2">Welcome back</h1>
             <p className="text-gray-600 mb-8">Login to your account</p>
 
-            <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
+            <form className="space-y-6" onSubmit={(e) => { e.preventDefault(); handleLogin(); }}>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
                 <input
@@ -106,6 +106,7 @@ function Login() {
 
               <div className="flex justify-between items-center">
                 <button
+                  type="button"
                   className="text-indigo-600 hover:text-indigo-800 text-sm"
                   onClick={() => navigate("/forgotpassword")}
                 >
@@ -114,8 +115,8 @@ function Login() {
               </div>
 
               <button
+                type="submit"
                 className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-3 rounded-xl font-medium hover:from-indigo-700 hover:to-purple-700 transition shadow-md"
-                onClick={handleLogin}
                 disabled={loading}
               >
                 {loading ? <ClipLoader size={20} color="white" /> : "Login"}
@@ -138,6 +139,7 @@ function Login() {
               <div className="text-center text-gray-600">
                 Don't have an account?{' '}
                 <button
+                  type="button"
                   className="text-indigo-600 hover:text-indigo-800 font-medium"
                   onClick={() => navigate("/signup")}
                 >

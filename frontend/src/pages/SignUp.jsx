@@ -94,7 +94,14 @@ function SignUp() {
             <h1 className="text-3xl font-bold text-gray-800 mb-2">Create Account</h1>
             <p className="text-gray-600 mb-8">Join us to start learning</p>
 
-            <form className="space-y-5" onSubmit={(e) => e.preventDefault()}>
+            <form className="space-y-5" onSubmit={(e) => {
+              e.preventDefault();
+              if (step === 1) {
+                handleSendOtp();
+              } else if (step === 2) {
+                handleVerifyAndSignup();
+              }
+            }}>
 
               {step === 1 && (
                 <>
@@ -159,8 +166,8 @@ function SignUp() {
                   </div>
 
                   <button
+                    type="submit"
                     className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-3 rounded-xl font-medium hover:from-indigo-700 hover:to-purple-700 transition shadow-md"
-                    onClick={handleSendOtp}
                     disabled={loading}
                   >
                     {loading ? <ClipLoader size={20} color="white" /> : "Send OTP"}
@@ -187,8 +194,8 @@ function SignUp() {
                   </div>
 
                   <button
+                    type="submit"
                     className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-3 rounded-xl font-medium hover:from-indigo-700 hover:to-purple-700 transition shadow-md"
-                    onClick={handleVerifyAndSignup}
                     disabled={loading}
                   >
                     {loading ? <ClipLoader size={20} color="white" /> : "Verify & Create Account"}
@@ -225,6 +232,7 @@ function SignUp() {
               <div className="text-center text-gray-600">
                 Already have an account?{' '}
                 <button
+                  type="button"
                   className="text-indigo-600 hover:text-indigo-800 font-medium"
                   onClick={() => navigate("/login")}
                 >

@@ -1,28 +1,16 @@
-import nodemailer from "nodemailer"
+import { Resend } from "resend"
 import dotenv from "dotenv"
 
 dotenv.config();
 
-const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 465,
-  secure: true, // true for 465, false for other ports
-  auth: {
-    user: process.env.USER_EMAIL,
-    pass: process.env.USER_PASSWORD,
-  },
-  tls: {
-    rejectUnauthorized: false, // This might be needed for some environments, but generally not recommended for production
-  },
-  logger: true, // Enable logging to console
-  debug: true, // Enable debug output
-});
+const resend = new Resend(process.env.RESEND_API_KEY);
+const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || "onboarding@resend.dev";
 
 // Password reset email
 const sendPasswordResetMail = async (to, otp) => {
     try {
-        const mailOptions = {
-            from: process.env.USER_EMAIL,
+        const { data, error } = await resend.emails.send({
+            from: FROM_EMAIL,
             to: to,
             subject: "Reset Your Password - InstructoPlus",
             html: `
@@ -50,11 +38,15 @@ const sendPasswordResetMail = async (to, otp) => {
                     </div>
                 </div>
             `
-        };
+        });
 
-        const result = await transporter.sendMail(mailOptions);
+        if (error) {
+            console.error("Resend API error sending password reset mail:", error);
+            throw error;
+        }
+
         console.log("Password reset email sent successfully");
-        return result;
+        return data;
     } catch (error) {
         console.error("Password reset email sending error:", error.message);
         throw new Error("Failed to send password reset email");
@@ -64,8 +56,8 @@ const sendPasswordResetMail = async (to, otp) => {
 // Announcement email
 const sendAnnouncementMail = async (to, subject, title, description, attachmentUrl, senderName) => {
     try {
-        const mailOptions = {
-            from: process.env.USER_EMAIL,
+        const { data, error } = await resend.emails.send({
+            from: FROM_EMAIL,
             to: to,
             subject: subject,
             html: `
@@ -102,11 +94,15 @@ const sendAnnouncementMail = async (to, subject, title, description, attachmentU
                     </div>
                 </div>
             `
-        };
+        });
 
-        const result = await transporter.sendMail(mailOptions);
+        if (error) {
+            console.error("Resend API error sending announcement mail:", error);
+            throw error;
+        }
+
         console.log("Announcement email sent successfully");
-        return result;
+        return data;
     } catch (error) {
         console.error("Announcement email sending error:", error.message);
         throw new Error("Failed to send announcement email");
@@ -115,8 +111,8 @@ const sendAnnouncementMail = async (to, subject, title, description, attachmentU
 
 const sendSignupMail = async (to, otp) => {
     try {
-        const mailOptions = {
-            from: process.env.USER_EMAIL,
+        const { data, error } = await resend.emails.send({
+            from: FROM_EMAIL,
             to: to,
             subject: "Verify Your Email - InstructoPlus",
             html: `
@@ -146,10 +142,15 @@ const sendSignupMail = async (to, otp) => {
                     </div>
                 </div>
             `
-        };
-        const result = await transporter.sendMail(mailOptions);
+        });
+
+        if (error) {
+            console.error("Resend API error sending signup mail:", error);
+            throw error;
+        }
+
         console.log("Signup verification email sent successfully");
-        return result;
+        return data;
     } catch (error) {
         console.error("Signup email sending error:", error.message);
         throw new Error("Failed to send signup verification email");
